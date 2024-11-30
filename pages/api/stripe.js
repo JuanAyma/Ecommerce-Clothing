@@ -1,10 +1,17 @@
 import Stripe from 'stripe';
-import cors from 'cors';
 
 const stripe = new Stripe(`${process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}`);
 
-
-
+async function insertOrder(order) {
+  const response = await fetch(process.env.API_GATEWAY_URL_AWS, {
+    method: 'POST',
+    body: JSON.stringify(order),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  return response.json();
+}
 export default async function handler(req, res) {
 
   if (req.method === 'POST') {
@@ -17,8 +24,10 @@ export default async function handler(req, res) {
         payment_method_types: ['card'],
         billing_address_collection: 'auto',
         shipping_options: [
-            { shipping_rate: 'shr_1Q1dhDBxoN0HawVz8rbyLFAB' },
-            { shipping_rate: 'shr_1Q1djHBxoN0HawVz5IdndGlP' }
+            // { shipping_rate: 'shr_1Q1dhDBxoN0HawVz8rbyLFAB' },
+            // { shipping_rate: 'shr_1Q1djHBxoN0HawVz5IdndGlP' }
+          { shipping_rate: 'shr_1QQtjKQwrW91HNOXFckA3x2W' },
+          { shipping_rate: 'shr_1QQtlEQwrW91HNOXZV9O0TR8' }
         ],
         line_items: req.body.map((item) => {
           const img = item.image[0].asset._ref;
@@ -44,7 +53,23 @@ export default async function handler(req, res) {
         success_url: `${req.headers.origin}/successPay`,
         cancel_url: `${req.headers.origin}/cart`,
       }
+
+      console.log("[REQ]: ", JSON.stringify(req.body))
       const session = await stripe.checkout.sessions.create(params);
+
+
+      // Insert order into the database
+      await insertOrder({
+        sessionId: session.id,
+        body: req.body,
+        items: req.body.map((item) => ({
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+        })),
+        status: 'pending',
+        createdAt: new Date(),
+      });
 
       res.status(200).json(session);
     } catch (err) {
