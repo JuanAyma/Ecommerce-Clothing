@@ -58,6 +58,11 @@ export default {
             type: 'number',
         },
         {
+            name: 'stock',
+            title: 'Stock',
+            type: 'number',
+        },
+        {
             name: 'details',
             title: 'Details',
             type: 'array', 

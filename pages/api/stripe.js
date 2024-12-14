@@ -57,19 +57,23 @@ export default async function handler(req, res) {
       console.log("[REQ]: ", JSON.stringify(req.body))
       const session = await stripe.checkout.sessions.create(params);
 
-
-      // Insert order into the database
-      await insertOrder({
+      const order = {
         sessionId: session.id,
         body: req.body,
         items: req.body.map((item) => ({
           name: item.name,
           price: item.price,
           quantity: item.quantity,
+          slug: item.slug.current,
+          stock: item.stock,
+          type: item.tags,
         })),
         status: 'pending',
         createdAt: new Date(),
-      });
+      }
+      console.log("[SLUG]: ", JSON.stringify(order))
+      // Insert order into the database
+      await insertOrder(order);
 
       res.status(200).json(session);
     } catch (err) {

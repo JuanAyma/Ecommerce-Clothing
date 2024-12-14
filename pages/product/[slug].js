@@ -5,7 +5,7 @@ import {CgShoppingCart} from 'react-icons/cg'
 import { useStateContext } from '../../context/StateContext';
 
 const ProductDetails = ({products, product}) => {
-    const { image, name, details, price, tags, care } = product;
+    const { image, name, details, price, tags, care, stock } = product;
     const [index, setIndex] = useState(0);
     const {decQty, incQty, qty, onAdd} = useStateContext();
 
@@ -35,7 +35,7 @@ const ProductDetails = ({products, product}) => {
                 <div className='product-details'>
                     <div className='name-and-category'>
                         <h3>{name}</h3>
-                        <span>{tags}</span>   
+                        <span>{tags}</span>
                     </div>
                     <div className='size'>
                         <p>SELECT SIZE</p>
@@ -50,14 +50,22 @@ const ProductDetails = ({products, product}) => {
                     <div className='quantity-desc'>
                         <h4>Quantity: </h4>
                         <div>
-                            <span className='minus' onClick={decQty}><AiOutlineMinus /></span>
+                            <span className='minus' onClick={decQty}><AiOutlineMinus/></span>
                             <span className='num' onClick=''>{qty}</span>
-                            <span className='plus' onClick={incQty}><AiOutlinePlus /></span>
+                            <span className='plus' onClick={incQty}><AiOutlinePlus/></span>
+                        </div>
+                    </div>
+                    <div className='quantity-desc'>
+                        <h4>Stock: </h4>
+                        <div>
+                            <span className='num' >{stock}</span>
                         </div>
                     </div>
                     <div className='add-to-cart'>
-                        <button className='btn' type='button' onClick={() => onAdd(product, qty)}><CgShoppingCart size={20} />Add to Cart</button>
-                        <p className='price'>${price}.00</p>  
+                        <button className='btn' type='button' onClick={() => onAdd(product, qty)}><CgShoppingCart
+                            size={20}/>Add to Cart
+                        </button>
+                        <p className='price'>${price}.00</p>
                     </div>
                 </div>
             </div>
@@ -67,7 +75,7 @@ const ProductDetails = ({products, product}) => {
                     <div className="desc-background">
                         Overview
                     </div>
-                    <h2>Product Information</h2>  
+                    <h2>Product Information</h2>
                 </div>
                 <div className='desc-details'>
                     <h4>PRODUCT DETAILS</h4>
